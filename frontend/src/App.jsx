@@ -4,6 +4,7 @@ import {motion} from "framer-motion";
 import {ArrowRight,BookOpen,Brain,CheckCircle,ChevronDown,Clock3,GraduationCap,MapPin,Menu,Phone,ShieldCheck,Star,Target,Trophy,Users,X,BarChart3,CalendarDays,FileText,LogIn,MessageCircle} from "lucide-react";
 import {LineChart,Line,XAxis,YAxis,Tooltip,ResponsiveContainer,CartesianGrid} from "recharts";
 import {api,clearSession,getSessionUser,saveSession} from "./api";
+import AdminDashboard from "./AdminDashboard";
 
 const fallbackCourses=[
  {name:"Foundation Program",tag:"Classes 8–10",description:"Build strong concepts, study habits and confidence for the next academic stage.",icon:Brain},
@@ -20,10 +21,31 @@ const performance=[{test:"T1",score:62},{test:"T2",score:68},{test:"T3",score:71
 
 function Layout({children}){
  const [open,setOpen]=useState(false);
- const nav=[["Home","/"],["Courses","/courses"],["Faculty","/faculty"],["Results","/results"],["About","/about"],["Contact","/contact"]];
- return <><header className="nav"><div className="container navin"><Link to="/" className="brand"><span className="brandmark">IE</span><span><b>Ideal Educational Hub</b><small>Motivational Training Centre</small></span></Link><button className="menubtn" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><nav className={open?"links open":"links"}>{nav.map(([t,u])=><Link key={u} to={u} onClick={()=>setOpen(false)}>{t}</Link>)}<Link className="login" to="/student/login">Student Login</Link><Link className="btn small" to="/admissions">Book a Demo</Link></nav></div></header>{children}<Footer/></>
+ const nav=[
+  ["Home","/"],
+  ["Courses","/courses"],
+  ["Faculty","/faculty"],
+  ["Results","/results"],
+  ["About","/about"],
+  ["FAQ","/faq"],
+  ["Contact","/contact"]
+];
+ return <><header className="nav"><div className="container navin"><Link to="/" className="brand"><img src="/logo.png" alt="Ideal Educational Hub" className="brand-logo" /><span><b>Ideal Educational Hub</b><small>Motivational Training Centre</small></span></Link><button className="menubtn" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><nav className={open?"links open":"links"}>{nav.map(([t,u])=><Link key={u} to={u} onClick={()=>setOpen(false)}>{t}</Link>)}<Link className="login" to="/student/login">Student Login</Link><Link className="btn small" to="/admissions">Book a Demo</Link></nav></div></header>{children}<Footer/></>
 }
-function Footer(){return <footer><div className="container footgrid"><div><div className="brand footerbrand"><span className="brandmark">IE</span><span><b>Ideal Educational Hub</b><small>Motivational Training Centre</small></span></div><p>Focused learning, disciplined preparation and personal guidance for students.</p></div><div><h4>Explore</h4><Link to="/courses">Courses</Link><Link to="/faculty">Faculty</Link><Link to="/results">Results</Link><Link to="/about">About Us</Link></div><div><h4>Student</h4><Link to="/student/login">Student Login</Link><Link to="/admissions">Admissions</Link><Link to="/contact">Contact</Link></div><div><h4>Visit Us</h4><p><MapPin size={15}/> Kisan Chowk, Kaptanganj (Captainganj), Kushinagar – 274301, Uttar Pradesh</p></div></div><div className="copyright">© 2026 Ideal Educational Hub & Motivational Training Centre. All rights reserved.</div></footer>}
+function Footer(){return <footer><div className="container footgrid"><div><div className="brand footerbrand"><img src="/logo.png" alt="Ideal Educational Hub" className="brand-logo" /><span><b>Ideal Educational Hub</b><small>Motivational Training Centre</small></span></div><p>Focused learning, disciplined preparation and personal guidance for students.</p></div><div>
+  <h4>Explore</h4>
+  <Link to="/courses">Courses</Link>
+  <Link to="/faculty">Faculty</Link>
+  <Link to="/results">Results</Link>
+  <Link to="/about">About Us</Link>
+  <Link to="/faq">FAQ</Link>
+</div><div>
+  <h4>Student</h4>
+  <Link to="/student/login">Student Login</Link>
+  <Link to="/admissions">Admissions</Link>
+  <Link to="/contact">Contact</Link>
+  <Link to="/admin/login">Admin Login</Link>
+</div><div><h4>Visit Us</h4><p><MapPin size={15}/> Kisan Chowk, Kaptanganj (Captainganj), Kushinagar – 274301, Uttar Pradesh</p></div></div><div className="copyright">© 2026 Ideal Educational Hub & Motivational Training Centre. All rights reserved.</div></footer>}
 
 function Home(){
  return <Layout><main>
@@ -451,18 +473,557 @@ function StudentLogin(){
  const nav=useNavigate(); const [error,setError]=useState(""); const [loading,setLoading]=useState(false);
  useEffect(()=>{if(getSessionUser()) nav("/student/dashboard",{replace:true});},[nav]);
  const submit=async e=>{e.preventDefault();setLoading(true);setError("");const form=new FormData(e.currentTarget);try{const data=await api.login(form.get("email"),form.get("password"));if(data.user.role!=="student"){throw new Error("This login is not a student account.");}saveSession(data);nav("/student/dashboard");}catch(err){setError(err.message);}finally{setLoading(false);}};
- return <Layout><section className="loginpage"><div className="loginbox card"><div className="brand center"><span className="brandmark">IE</span></div><div className="eyebrow">STUDENT PORTAL</div><h1>Welcome back</h1><p>Sign in with your student account to view live results, attendance, tests and announcements.</p><form onSubmit={submit}><label>Email / Student ID<input name="email" required type="email" placeholder="student@idealhub.local"/></label><label>Password<input name="password" required type="password" placeholder="••••••••"/></label>{error&&<p className="formerror">{error}</p>}<button className="btn full" disabled={loading}>{loading?"Logging in…":"Log In"} {!loading&&<LogIn size={17}/>}</button></form><p className="demo-hint">Demo student: <b>student@idealhub.local</b> · <b>Student123!</b></p></div></section></Layout>
+ return <Layout><section className="loginpage"><div className="loginbox card"><div className="brand center"><img src="/logo.png" alt="Ideal Educational Hub" className="brand-logo" /></div><div className="eyebrow">STUDENT PORTAL</div><h1>Welcome back</h1><p>Sign in with your student account to view live results, attendance, tests and announcements.</p><form onSubmit={submit}><label>Email / Student ID<input name="email" required type="email" placeholder="student@idealhub.local"/></label><label>Password<input name="password" required type="password" placeholder="••••••••"/></label>{error&&<p className="formerror">{error}</p>}<button className="btn full" disabled={loading}>{loading?"Logging in…":"Log In"} {!loading&&<LogIn size={17}/>}</button></form><p className="demo-hint">Demo student: <b>student@idealhub.local</b> · <b>Student123!</b></p></div></section></Layout>
 }
-function Dashboard(){
- const nav=useNavigate(); const [data,setData]=useState(null); const [error,setError]=useState("");
- useEffect(()=>{if(!localStorage.getItem("idealhub_token")){nav("/student/login",{replace:true});return;}api.getDashboard().then(setData).catch(err=>{clearSession();setError(err.message);nav("/student/login",{replace:true});});},[nav]);
- if(!data) return <Layout><section className="dash"><div className="container"><div className="card loadingcard">Loading your dashboard…</div></div></section></Layout>;
- const performance=(data.recentResults||[]).slice().reverse().map((r,i)=>({test:r.test?.title?.slice(0,8)||`T${i+1}`,score:r.percentage}));
- const upcoming=(data.upcomingTests||[]).slice(0,4);
- const user=data.user||getSessionUser()||{};
- return <Layout><section className="dash"><div className="container"><div className="dashhead"><div><div className="eyebrow">STUDENT DASHBOARD</div><h1>Welcome, {user.name || "Student"} 👋</h1><p>{user.className?`Class ${user.className}`:"Your live learning overview"}{user.course?.name?` · ${user.course.name}`:""}</p></div><button className="btn ghost" onClick={()=>{clearSession();nav("/student/login")}}>Log out</button></div><div className="metricgrid">{[[`${data.stats?.overallScore||0}%`,"Overall score"],[`${data.stats?.attendance||0}%`,"Attendance"],[`${data.stats?.testsCompleted||0}`,"Tests completed"]].map(x=><div className="metric card" key={x[1]}><span>{x[1]}</span><strong>{x[0]}</strong></div>)}</div><div className="dashgrid"><div className="chart card"><div className="cardhead"><div><b>Performance trend</b><span>Recent tests</span></div><BarChart3/></div><div className="chartbox">{performance.length?<ResponsiveContainer width="100%" height="100%"><LineChart data={performance}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="test"/><YAxis domain={[0,100]}/><Tooltip/><Line type="monotone" dataKey="score" strokeWidth={3}/></LineChart></ResponsiveContainer>:<div className="empty">No results have been added yet.</div>}</div></div><div className="card upcoming"><div className="cardhead"><div><b>Upcoming tests</b><span>From the institute</span></div><CalendarDays/></div>{upcoming.length?upcoming.map(x=><div className="listrow" key={x._id}><Clock3/><span>{x.title} · {x.subject}</span><small>{x.scheduledAt?new Date(x.scheduledAt).toLocaleDateString():"TBA"}</small></div>):<div className="empty">No upcoming tests.</div>}</div></div>{(data.announcements||[]).length>0&&<div className="card announcements"><div className="cardhead"><div><b>Announcements</b><span>Latest institute notices</span></div><FileText/></div>{data.announcements.map(a=><div className="announcement" key={a._id}><b>{a.title}</b><p>{a.message}</p></div>)}</div>}</div></section></Layout>
+
+function AdminLogin(){
+  const nav = useNavigate();
+  const [error,setError] = useState("");
+  const [loading,setLoading] = useState(false);
+
+  useEffect(()=>{
+    const user = getSessionUser();
+
+    if(user?.role === "admin"){
+      nav("/admin",{replace:true});
+    }
+  },[nav]);
+
+  const submit = async e => {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
+
+    const form = new FormData(e.currentTarget);
+
+    try{
+      const data = await api.login(
+        form.get("email"),
+        form.get("password")
+      );
+
+      if(data.user.role !== "admin"){
+        throw new Error(
+          "This account does not have administrator access."
+        );
+      }
+
+      saveSession(data);
+
+      nav("/admin");
+    }catch(err){
+      setError(err.message);
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Layout>
+      <section className="loginpage">
+        <div className="loginbox card">
+
+          <div className="brand center">
+            <img src="/logo.png" alt="Ideal Educational Hub" className="brand-logo" />
+          </div>
+
+          <div className="eyebrow">
+            ADMINISTRATOR PORTAL
+          </div>
+
+          <h1>Admin Login</h1>
+
+          <p>
+            Sign in to manage students, courses, tests,
+            enquiries and institute updates.
+          </p>
+
+          <form onSubmit={submit}>
+
+            <label>
+              Admin Email
+              <input
+                name="email"
+                required
+                type="email"
+                placeholder="admin@example.com"
+              />
+            </label>
+
+            <label>
+              Password
+              <input
+                name="password"
+                required
+                type="password"
+                placeholder="••••••••"
+              />
+            </label>
+
+            {error && (
+              <p className="formerror">
+                {error}
+              </p>
+            )}
+
+            <button
+              className="btn full"
+              disabled={loading}
+            >
+              {loading ? "Logging in…" : "Admin Login"}
+
+              {!loading && <LogIn size={17}/>}
+            </button>
+
+          </form>
+
+        </div>
+      </section>
+    </Layout>
+  );
+}
+
+
+function Dashboard() {
+  const nav = useNavigate();
+
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!localStorage.getItem("idealhub_token")) {
+      nav("/student/login", { replace: true });
+      return;
+    }
+
+    api
+      .getDashboard()
+      .then(setData)
+      .catch((err) => {
+        clearSession();
+        setError(err.message);
+        nav("/student/login", { replace: true });
+      });
+  }, [nav]);
+
+  if (!data) {
+    return (
+      <Layout>
+        <section className="dash">
+          <div className="container">
+            <div className="card loadingcard">
+              Loading your dashboard…
+            </div>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
+  const user = data.user || getSessionUser() || {};
+
+  const upcomingTests = (data.upcomingTests || []).slice(0, 4);
+
+  const recentResults = (data.recentResults || [])
+    .slice()
+    .reverse()
+    .slice(0, 5)
+    .map((result, index) => ({
+      test:
+        result.test?.title?.slice(0, 10) ||
+        `Test ${index + 1}`,
+      score: Number(result.percentage || 0),
+    }));
+
+  const courseName =
+    user.course?.name ||
+    data.course?.name ||
+    "Course not assigned";
+
+  const className =
+    user.className ||
+    data.student?.className ||
+    "Not specified";
+
+  const phone =
+    user.phone ||
+    data.student?.phone ||
+    "Not provided";
+
+  const parentName =
+    user.parentName ||
+    data.student?.parentName ||
+    "Not provided";
+
+  function logout() {
+    clearSession();
+    nav("/student/login", { replace: true });
+  }
+
+  return (
+    <Layout>
+      <section className="dash">
+        <div className="container">
+
+          {/* HEADER */}
+          <div className="dashhead">
+            <div>
+              <div className="eyebrow">
+                STUDENT DASHBOARD
+              </div>
+
+              <h1>
+                Welcome, {user.name || "Student"} 👋
+              </h1>
+
+              <p>
+                {className !== "Not specified"
+                  ? `Class ${className}`
+                  : "Your learning overview"}
+                {" · "}
+                {courseName}
+              </p>
+            </div>
+
+            <button
+              className="btn ghost"
+              onClick={logout}
+            >
+              Log out
+            </button>
+          </div>
+
+          {/* QUICK STATS */}
+          <div className="metricgrid">
+
+            <div className="metric card">
+              <span>My Course</span>
+              <strong className="metric-course">
+                {courseName}
+              </strong>
+            </div>
+
+            <div className="metric card">
+              <span>Tests Completed</span>
+              <strong>
+                {data.stats?.testsCompleted || 0}
+              </strong>
+            </div>
+
+            <div className="metric card">
+              <span>Overall Score</span>
+              <strong>
+                {data.stats?.overallScore || 0}%
+              </strong>
+            </div>
+
+            <div className="metric card">
+              <span>Upcoming Tests</span>
+              <strong>
+                {upcomingTests.length}
+              </strong>
+            </div>
+
+          </div>
+
+          {/* MAIN DASHBOARD */}
+          <div className="dashgrid">
+
+            {/* PERFORMANCE */}
+            <div className="chart card">
+
+              <div className="cardhead">
+                <div>
+                  <b>Performance Overview</b>
+                  <span>
+                    Your recent test performance
+                  </span>
+                </div>
+
+                <BarChart3 />
+              </div>
+
+              <div className="chartbox">
+
+                {recentResults.length > 0 ? (
+                  <ResponsiveContainer
+                    width="100%"
+                    height="100%"
+                  >
+                    <LineChart data={recentResults}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                      />
+
+                      <XAxis
+                        dataKey="test"
+                      />
+
+                      <YAxis
+                        domain={[0, 100]}
+                      />
+
+                      <Tooltip />
+
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        strokeWidth={3}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="empty">
+                    No test results available yet.
+                  </div>
+                )}
+
+              </div>
+            </div>
+
+            {/* UPCOMING TESTS */}
+            <div className="card upcoming">
+
+              <div className="cardhead">
+                <div>
+                  <b>Upcoming Tests</b>
+                  <span>
+                    Tests scheduled by the institute
+                  </span>
+                </div>
+
+                <CalendarDays />
+              </div>
+
+              {upcomingTests.length > 0 ? (
+                upcomingTests.map((test) => (
+                  <div
+                    className="listrow"
+                    key={test._id}
+                  >
+                    <Clock3 />
+
+                    <span>
+                      <b>{test.title}</b>
+                      {test.subject && (
+                        <> · {test.subject}</>
+                      )}
+                    </span>
+
+                    <small>
+                      {test.scheduledAt
+                        ? new Date(
+                            test.scheduledAt
+                          ).toLocaleDateString()
+                        : test.date
+                        ? new Date(
+                            test.date
+                          ).toLocaleDateString()
+                        : "TBA"}
+                    </small>
+                  </div>
+                ))
+              ) : (
+                <div className="empty">
+                  No upcoming tests.
+                </div>
+              )}
+
+            </div>
+
+          </div>
+
+          {/* STUDENT PROFILE */}
+          <div className="card student-profile-card">
+
+            <div className="cardhead">
+              <div>
+                <b>My Profile</b>
+                <span>
+                  Your registered student information
+                </span>
+              </div>
+
+              <Users />
+            </div>
+
+            <div className="student-profile-grid">
+
+              <div className="profile-item">
+                <span>Full Name</span>
+                <strong>
+                  {user.name || "Not provided"}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Email</span>
+                <strong>
+                  {user.email || "Not provided"}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Phone</span>
+                <strong>
+                  {phone}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Class</span>
+                <strong>
+                  {className}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Course</span>
+                <strong>
+                  {courseName}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Parent / Guardian</span>
+                <strong>
+                  {parentName}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* COMING SOON */}
+          <div className="student-feature-grid">
+
+            <div className="card student-feature">
+              <div className="student-feature-icon">
+                <Trophy />
+              </div>
+
+              <div>
+                <span className="tag">
+                  COMING SOON
+                </span>
+
+                <h3>Results</h3>
+
+                <p>
+                  Your detailed test results and
+                  academic performance will appear here.
+                </p>
+              </div>
+            </div>
+
+            <div className="card student-feature">
+              <div className="student-feature-icon">
+                <CalendarDays />
+              </div>
+
+              <div>
+                <span className="tag">
+                  COMING SOON
+                </span>
+
+                <h3>Attendance</h3>
+
+                <p>
+                  Your attendance record and
+                  monthly attendance summary will
+                  appear here.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ANNOUNCEMENTS */}
+          {(data.announcements || []).length > 0 && (
+            <div className="card announcements">
+
+              <div className="cardhead">
+                <div>
+                  <b>Announcements</b>
+                  <span>
+                    Latest institute notices
+                  </span>
+                </div>
+
+                <FileText />
+              </div>
+
+              {data.announcements.map((announcement) => (
+                <div
+                  className="announcement"
+                  key={announcement._id}
+                >
+                  <b>
+                    {announcement.title}
+                  </b>
+
+                  <p>
+                    {announcement.message}
+                  </p>
+                </div>
+              ))}
+
+            </div>
+          )}
+
+        </div>
+      </section>
+    </Layout>
+  );
 }
 function FAQ(){const [a,setA]=useState(null);let qs=["What courses do you offer?","How can I book a demo?","Do you provide study material?","How frequently are tests conducted?"];return <Layout><PageHero eyebrow="FAQ" title="Frequently asked questions" text="Quick answers for students and parents."/><section className="section"><div className="container faq">{qs.map((q,i)=><div className="faqitem" key={q}><button onClick={()=>setA(a===i?null:i)}><span>{q}</span>{a===i?<X/>:<ChevronDown/>}</button>{a===i&&<p>Course-specific details, timings and availability can be confirmed directly with the institute. This demo site is intentionally not inventing information that has not been provided.</p>}</div>)}</div></section></Layout>}
 
 
-export default function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/courses" element={<Courses/>}/><Route path="/courses/:id" element={<CourseDetails/>}/><Route path="/faculty" element={<Faculty/>}/><Route path="/results" element={<Results/>}/><Route path="/about" element={<About/>}/><Route path="/contact" element={<Contact/>}/><Route path="/admissions" element={<Admissions/>}/><Route path="/faq" element={<FAQ/>}/><Route path="/student/login" element={<StudentLogin/>}/><Route path="/student/dashboard" element={<Dashboard/>}/><Route path="*" element={<Home/>}/></Routes>}
+export default function App(){
+  return (
+    <Routes>
+
+      {/* Public Website */}
+      <Route path="/" element={<Home/>}/>
+      <Route path="/courses" element={<Courses/>}/>
+      <Route path="/courses/:id" element={<CourseDetails/>}/>
+      <Route path="/faculty" element={<Faculty/>}/>
+      <Route path="/results" element={<Results/>}/>
+      <Route path="/about" element={<About/>}/>
+      <Route path="/contact" element={<Contact/>}/>
+      <Route path="/admissions" element={<Admissions/>}/>
+      <Route path="/faq" element={<FAQ/>}/>
+
+      {/* Student Portal */}
+      <Route
+        path="/student/login"
+        element={<StudentLogin/>}
+      />
+
+      <Route
+        path="/student/dashboard"
+        element={<Dashboard/>}
+      />
+
+      {/* Admin Portal */}
+      <Route
+        path="/admin/login"
+        element={<AdminLogin/>}
+      />
+
+      <Route
+        path="/admin"
+        element={<AdminDashboard/>}
+      />
+
+      {/* Fallback */}
+      <Route
+        path="*"
+        element={<Home/>}
+      />
+
+    </Routes>
+  );
+}
