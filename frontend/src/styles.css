@@ -2323,7 +2323,7 @@ footer a:hover{
 
 @media(max-width:520px) {
   .admin-stat-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .admin-panel {
@@ -2333,14 +2333,33 @@ footer a:hover{
   .admin-panel-heading {
     align-items: flex-start;
     flex-direction: column;
+    gap: 15px;
   }
 
   .admin-primary-btn {
     width: 100%;
   }
 
+  /* Compact mobile navigation */
   .admin-nav {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+  }
+
+  .admin-nav-item {
+    padding: 11px 10px;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .admin-nav-item svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .admin-logout {
+    width: 100%;
+    justify-content: center;
   }
 
   .admin-header h1 {
@@ -2359,7 +2378,6 @@ footer a:hover{
     padding: 20px;
   }
 }
-
 
 /* Logo */
 /* Logo image */
