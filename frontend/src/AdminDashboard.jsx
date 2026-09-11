@@ -13,12 +13,14 @@ import {
   Trash2,
   Edit,
   X,
+  Menu,
 } from "lucide-react";
 
 import { api, clearSession } from "./api";
 
 export default function AdminDashboard({ onLogout }) {
   const [activeSection, setActiveSection] = useState("overview");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -254,13 +256,14 @@ export default function AdminDashboard({ onLogout }) {
   return (
     <div className="admin-layout">
       {/* SIDEBAR */}
+      {/* DESKTOP SIDEBAR */}
       <aside className="admin-sidebar">
         <div className="admin-brand">
           <img
             src="/logo.png"
             alt="Ideal Educational Hub"
             className="admin-brand-logo"
-            />
+          />
 
           <div>
             <strong>Ideal Educational Hub</strong>
@@ -276,7 +279,9 @@ export default function AdminDashboard({ onLogout }) {
               <button
                 key={item.id}
                 className={
-                  activeSection === item.id ? "admin-nav-item active" : "admin-nav-item"
+                  activeSection === item.id
+                    ? "admin-nav-item active"
+                    : "admin-nav-item"
                 }
                 onClick={() => setActiveSection(item.id)}
               >
@@ -292,6 +297,70 @@ export default function AdminDashboard({ onLogout }) {
           <span>Logout</span>
         </button>
       </aside>
+
+      {/* MOBILE HEADER */}
+      <div className="admin-mobile-header">
+        <div className="admin-brand">
+          <img
+            src="/logo.png"
+            alt="Ideal Educational Hub"
+            className="admin-brand-logo"
+          />
+
+          <div>
+            <strong>Ideal Educational Hub</strong>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+
+        <button
+          className="admin-mobile-menu-btn"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+        >
+          {mobileMenuOpen ? <X size={25} /> : <Menu size={25} />}
+        </button>
+      </div>
+
+      {/* MOBILE MENU */}
+      {mobileMenuOpen && (
+        <div className="admin-mobile-menu">
+          <nav className="admin-mobile-nav">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <button
+                  key={item.id}
+                  className={
+                    activeSection === item.id
+                      ? "admin-mobile-nav-item active"
+                      : "admin-mobile-nav-item"
+                  }
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Icon size={19} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <button
+            className="admin-mobile-logout"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              logout();
+            }}
+          >
+            <LogOut size={19} />
+            <span>Logout</span>
+          </button>
+        </div>
+      )}
 
       {/* MAIN */}
       <main className="admin-main">
